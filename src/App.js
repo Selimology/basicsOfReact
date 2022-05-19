@@ -20,6 +20,15 @@ const reducer = (state, action) => {
   }
 };
 
+//this is to prevent mistyping actions
+//use it on dispatch
+const ACTION = {
+  INCREMENT: "increment",
+  DECREMENT: "decrement",
+  NEW_USER_INPUT: "newUserInput",
+  TG_COLOR: "tgColor"
+};
+
 export default function App() {
   const [state, dispatch] = useReducer(reducer, {
     count: 0,
@@ -40,16 +49,18 @@ export default function App() {
         //we also need the parameter (target.value) so dispatch
         //is slightly different
         onChange={(e) =>
-          dispatch({ type: "newUserInput", payload: e.target.value })
+          dispatch({ type: ACTION.NEW_USER_INPUT, payload: e.target.value })
         }
       />
       <br />
       <br />
       <p>{state.count}</p>
       <section>
-        <button onClick={() => dispatch({ type: "decrement" })}>-</button>
-        <button onClick={() => dispatch({ type: "increment" })}>+</button>
-        <button onClick={() => dispatch({ type: "tgColor" })}>Color</button>
+        <button onClick={() => dispatch({ type: ACTION.DECREMENT })}>-</button>
+        <button onClick={() => dispatch({ type: ACTION.INCREMENT })}>+</button>
+        <button onClick={() => dispatch({ type: ACTION.TG_COLOR })}>
+          Color
+        </button>
       </section>
       <p>{state.userInput}</p>
     </main>
