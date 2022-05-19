@@ -1,37 +1,45 @@
 import "./styles.css";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 
-const initialState = {
-  isLoading: false,
-  error: null,
-  data: null
-};
+//define reducer (state,action)
 
 const reducer = (state, action) => {
-  console.log("reducer", state, action);
-
   switch (action.type) {
-    case "getArticleStart":
-      return {
-        ...state,
-        isLoading: true
-      };
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
     default:
-      return state;
+      throw new Error();
   }
-
-  return state;
 };
 
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  console.log("render", state);
+  const [state, dispatch] = useReducer(reducer, {
+    count: 0
+  });
+
+  //Converting from useState to useReducer
+  const [userInput, setUserInput] = useState("");
+  // const [count, setCount] = useState(0);
+  const [color, setColor] = useState(false);
+
   return (
-    <>
-      <h1>Hello</h1>
-      <button onClick={() => dispatch({ type: "getArticleStart" })}>
-        Start getting article
-      </button>
-    </>
+    <main className="App" style={{ color: color ? "#FFF" : "#FFF952" }}>
+      <input
+        type="text"
+        value={userInput}
+        onChange={(e) => setUserInput(e.target.value)}
+      />
+      <br />
+      <br />
+      <p>{state.count}</p>
+      <section>
+        <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+        <button onClick={() => dispatch({ type: "increment" })}>+</button>
+        <button onClick={() => setColor((prev) => !prev)}>Color</button>
+      </section>
+      <p>{userInput}</p>
+    </main>
   );
 }
