@@ -1,5 +1,6 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useContext } from "react";
 import { logincheck } from "./utils";
+import { ThemeContext } from "./index";
 
 function reducer(state, action) {
   switch (action.type) {
