@@ -1,28 +1,79 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import { logincheck } from "./utils";
 
+function reducer(state, action) {
+  switch (action.type) {
+    case "field":
+      return {
+        ...state,
+        [action.fieldName]: action.payload
+      };
+    case "login":
+      return {
+        ...state,
+        isLoading: true,
+        error: ""
+      };
+    case "success":
+      return {
+        ...state,
+        isLoading: false,
+        isLoggedIn: true
+      };
+    case "error":
+      return {
+        ...state,
+        error: "Incorrect password or username",
+        isLoading: false,
+        isLoggedIn: false,
+        username: "",
+        password: ""
+      };
+    case "logout":
+      return {
+        ...state,
+        isLoggedIn: false,
+        username: "",
+        password: ""
+      };
+
+    default:
+      break;
+  }
+}
+
+const initialState = {
+  username: "",
+  password: "",
+  isLoading: false,
+  error: "",
+  isLoggedIn: false
+};
+
+const ACTION = {
+  LOGIN: "login",
+  SUCCESS: "success",
+  ERROR: "error",
+  LOGOUT: "logout",
+  FIELD: "field"
+};
+
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setisLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [isLoggedIn, setisLoggedIn] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { username, password, isLoading, error, isLoggedIn } = state;
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setisLoading(true);
-    setError("");
+
+    dispatch({ type: ACTION.LOGIN });
+
     try {
       await logincheck({ username, password });
-      setisLoggedIn(true);
-      setUsername("");
-      setPassword("");
-      setError("");
+      dispatch({ type: ACTION.SUCCESS });
     } catch (error) {
-      //do nothing
-      setError("incorrect username or password");
+      dispatch({ type: ACTION.ERROR });
     }
-    setisLoading(false);
   };
   return (
     <div className="App">
@@ -30,7 +81,9 @@ export default function Login() {
         {isLoggedIn ? (
           <>
             <h1>Hello {username}</h1>
-            <button onClick={() => setisLoggedIn(false)}>Log out</button>
+            <button onClick={() => dispatch({ type: ACTION.LOGOUT })}>
+              Log out
+            </button>
           </>
         ) : (
           <form className="form" onSubmit={onSubmit}>
@@ -40,16 +93,28 @@ export default function Login() {
               type="text"
               placeholder="username"
               value={username}
-              onChange={(e) => setUsername(e.currentTarget.value)}
+              onChange={(e) =>
+                dispatch({
+                  type: ACTION.FIELD,
+                  fieldName: "username",
+                  payload: e.currentTarget.value
+                })
+              }
             />
             <input
               type="password"
               placeholder="password"
               value={password}
-              onChange={(e) => setPassword(e.currentTarget.value)}
+              onChange={(e) =>
+                dispatch({
+                  type: ACTION.FIELD,
+                  fieldName: "password",
+                  payload: e.currentTarget.value
+                })
+              }
             />
             <button className="submit" type="submit" disabled={isLoading}>
-              Login in
+              {isLoading ? "Logging in..." : "Log In"}
             </button>
           </form>
         )}
